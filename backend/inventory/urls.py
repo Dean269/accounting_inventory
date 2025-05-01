@@ -6,6 +6,4 @@ router = DefaultRouter()
 router.register(r'products', ProductViewSet)
 router.register(r'inventory', InventoryRecordViewSet)
 
-urlpatterns = [
-    path('', ProductViewSet.as_view({'get': 'list'})),  # or appropriate view
-]
+urlpatterns = router.urls
