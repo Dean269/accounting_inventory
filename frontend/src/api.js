@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { refreshToken } from './auth';
 
-const API = axios.get({
-    baseURL: 'http://localhost:8000/api/',
+const API = axios.create({
+    baseURL: 'http://localhost:8000/api',
   });
 
 // Automatically include token if it exists
