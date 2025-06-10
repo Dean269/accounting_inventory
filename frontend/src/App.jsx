@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import Navbar from './navBar';
 import Login from './components/login';
@@ -7,7 +7,7 @@ import PrivateRoute from './privateRoute';
 import DashboardHome from './components/dashboard';
 import InventoryTable from './components/inventoryTable';
 import AccountingReport from './components/accountingReport';
-import {Link, useLocation} from 'react-router-dom';
+import {Link, useLocation } from 'react-router-dom';
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
       
         
         {/* Protected Dashboard Routes */}
-        <Route path="/" element={
+        <Route path="/dashboard" element={
           <PrivateRoute>
             <DashboardLayout />
           </PrivateRoute>
@@ -35,20 +35,41 @@ function App() {
 // New Dashboard Layout Component
 function DashboardLayout() {
   const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const navItems = [
-    { label: 'Dashboard', to: '/' },
-    { label: 'Accounting', to: '/accounting' },
-    { label: 'Inventory', to: '/inventory' },
-    { label: 'Customers', to: '/customers' }, // Placeholder
-    { label: 'Invoicing', to: '/invoicing' }, // Placeholder
-    { label: 'Reports', to: '/reports' },     // Placeholder
-    { label: 'Settings', to: '/settings' },   // Placeholder
+    { label: 'Dashboard', to: '/dashboard' },
+    { label: 'Accounting', to: '/dashboard/accounting' },
+    { label: 'Inventory', to: '/dashboard/inventory' },
+    { label: 'Customers', to: '/dashboard/customers' }, // Placeholder
+    { label: 'Invoicing', to: '/dashboard/invoicing' }, // Placeholder
+    { label: 'Reports', to: '/dashboard/reports' },     // Placeholder
+    { label: 'Settings', to: '/dashboard/settings' },   // Placeholder
   ];
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-100 relative">
+      {/* Hamburger Button */}
+      <button
+        className="absolute top-4 left-4 z-20 md:hidden bg-white p-2 rounded shadow"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        aria-label="Open sidebar"
+      >
+        {/* Hamburger icon */}
+        <span className="block w-6 h-0.5 bg-gray-800 mb-1"></span>
+        <span className="block w-6 h-0.5 bg-gray-800 mb-1"></span>
+        <span className="block w-6 h-0.5 bg-gray-800"></span>
+      </button>
+
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r flex flex-col">
+      <aside
+        className={`
+          fixed top-0 left-0 h-full w-64 bg-white border-r flex flex-col z-10
+          transform transition-transform duration-200
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+          md:static md:translate-x-0
+        `}
+      >
         <div className="h-16 flex items-center justify-center border-b">
           <span className="font-bold text-lg">Logo</span>
         </div>
@@ -63,8 +84,8 @@ function DashboardLayout() {
                       ? 'bg-gray-200 font-semibold'
                       : 'hover:bg-gray-100'
                   }`}
+                  onClick={() => setSidebarOpen(false)} // close menu on link click
                 >
-                  {/* You can add icons here if desired */}
                   {item.label}
                 </Link>
               </li>
@@ -72,16 +93,24 @@ function DashboardLayout() {
           </ul>
         </nav>
         <div className="h-16 flex items-center justify-center border-t">
-          {/* Profile/Settings icons can go here */}
           <span className="text-gray-400">● ● ●</span>
         </div>
       </aside>
+
+      {/* Overlay for mobile when sidebar is open */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-30 z-0 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Main Content */}
-      <div className="flex-1 p-8">
+      <div className="flex-1 p-8 md:ml-64 transition-all duration-200">
         <Outlet />
       </div>
     </div>
   );
-} 
+}
 
 export default App;
