@@ -38,8 +38,8 @@ API.interceptors.response.use(
 );
 
 export const fetchProducts = () => axios.get(`${API}/inventory/products/`);
-export const fetchInventory = () => axios.get(`${API}/inventory/inventory/`);
-export const fetchTransactions = () => axios.get(`${API}/accounting/transactions/`);
-export const fetchExpenses = () => axios.get(`${API}/accounting/expenses/`);
+export const fetchInventory = () => API.get('/inventory/records/');
+export const fetchTransactions = () => API.get('/accounting/transactions/');
+export const fetchExpenses = () => API.get('/accounting/expenses/');
 
 export default API;

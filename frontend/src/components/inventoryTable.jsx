@@ -1,36 +1,58 @@
 import React, { useEffect, useState } from 'react';
-import { fetchInventory } from '../api';
+import API from '../api';
+import AddInventoryForm from './inventoryForm';
 
 const InventoryTable = () => {
   const [inventory, setInventory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchInventory()
-      .then(res => setInventory(res.data))
-      .catch(err => console.error(err));
+    API.get('/inventory/products/')
+      .then(res => {
+        setInventory(res.data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
+
+  
+
+  const reload = () => {
+    setLoading(true);
+    API.get('/inventory/products/')
+      .then(res => {
+        setInventory(res.data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  };
+
+  useEffect(reload, []);
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-2">Inventory</h2>
-      <table className="table-auto w-full">
-        <thead>
-          <tr>
-            <th>SKU</th>
-            <th>Quantity</th>
-            <th>Last Updated</th>
-          </tr>
-        </thead>
-        <tbody>
-          {inventory.map((item, idx) => (
-            <tr key={idx}>
-              <td>{item.product}</td>
-              <td>{item.quantity}</td>
-              <td>{new Date(item.last_updated).toLocaleDateString()}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h2 className="text-xl font-bold mb-4">Inventory</h2>
+      <AddInventoryForm onAdded={reload} />
+      <table className="min-w-full bg-white rounded shadow">
+  <thead>
+    <tr>
+      <th className="py-2 px-4 border-b text-left">SKU</th>
+      <th className="py-2 px-4 border-b text-left">Name</th>
+      <th className="py-2 px-4 border-b text-left">Stock</th>
+    </tr>
+  </thead>
+  <tbody>
+    {inventory.map(item => (
+      <tr key={item.id} className="hover:bg-gray-50">
+        <td className="py-2 px-4 border-b">{item.sku}</td>
+        <td className="py-2 px-4 border-b">{item.name}</td>
+        <td className="py-2 px-4 border-b">{item.stock}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
     </div>
   );
 };
