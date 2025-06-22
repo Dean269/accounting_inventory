@@ -41,5 +41,6 @@ export const fetchProducts = () => axios.get(`${API}/inventory/products/`);
 export const fetchInventory = () => API.get('/inventory/records/');
 export const fetchTransactions = () => API.get('/accounting/transactions/');
 export const fetchExpenses = () => API.get('/accounting/expenses/');
+export const fetchProfitLossReport = () => API.get('/accounting/profit-loss-report/');
 
 export default API;

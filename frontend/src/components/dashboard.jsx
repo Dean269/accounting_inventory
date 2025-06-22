@@ -1,28 +1,85 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { fetchProfitLossReport, fetchProducts } from '../api';
 
+const cardStyle = {
+    padding: '20px',
+    margin: '10px',
+    borderRadius: '8px',
+    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+    backgroundColor: '#fff',
+    minWidth: '200px',
+    textAlign: 'center',
+};
 
-const DashboardHome = () => (
-  <div>
-    <h1 className="text-2xl font-bold mb-2">Dashboard</h1>
-    <h2 className="text-xl font-semibold mb-6">Revenue Summary <span className="text-base font-normal text-gray-500">This Month</span></h2>
-    <div className="grid grid-cols-3 gap-4 mb-6">
-      <div className="bg-white p-4 rounded shadow text-center">Total Revenue</div>
-      <div className="bg-white p-4 rounded shadow text-center">Total Expenses</div>
-      <div className="bg-white p-4 rounded shadow text-center">Net Profit</div>
-    </div>
-    <div className="grid grid-cols-2 gap-4 mb-6">
-      <div className="bg-white p-4 rounded shadow h-48 flex items-center justify-center">Sales Chart</div>
-      <div className="bg-white p-4 rounded shadow h-48 flex items-center justify-center">Expenses Chart</div>
-    </div>
-    <div className="grid grid-cols-2 gap-4 mb-6">
-      <div className="bg-white p-4 rounded shadow">Inventory Alerts</div>
-      <div className="bg-white p-4 rounded shadow">Recent Activity</div>
-    </div>
-    <div className="grid grid-cols-2 gap-4">
-      <div className="bg-white p-4 rounded shadow">Quick Actions</div>
-      <div className="bg-white p-4 rounded shadow">Recent Activity</div>
-    </div>
-  </div>
-);
+const containerStyle = {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    padding: '20px',
+};
+
+function DashboardHome() {
+    const [report, setReport] = useState(null);
+    const [productCount, setProductCount] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        const loadDashboardData = async () => {
+            try {
+                setLoading(true);
+                const reportRes = await fetchProfitLossReport();
+                const productsRes = await fetchProducts();
+                
+                setReport(reportRes.data);
+                setProductCount(productsRes.data.length);
+                setError('');
+            } catch (err) {
+                setError('Failed to fetch dashboard data. Please try again later.');
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadDashboardData();
+    }, []);
+
+    if (loading) {
+        return <div>Loading Dashboard...</div>;
+    }
+
+    if (error) {
+        return <div style={{ color: 'red' }}>{error}</div>;
+    }
+
+    return (
+        <div>
+            <h2>Dashboard</h2>
+            <div style={containerStyle}>
+                {report && (
+                    <>
+                        <div style={cardStyle}>
+                            <h4>Net Profit</h4>
+                            <p>${Number(report.net_profit).toFixed(2)}</p>
+                        </div>
+                        <div style={cardStyle}>
+                            <h4>Total Revenue</h4>
+                            <p>${Number(report.total_revenue).toFixed(2)}</p>
+                        </div>
+                        <div style={cardStyle}>
+                            <h4>COGS</h4>
+                            <p>${Number(report.cogs).toFixed(2)}</p>
+                        </div>
+                    </>
+                )}
+                <div style={cardStyle}>
+                    <h4>Active Products</h4>
+                    <p>{productCount}</p>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 export default DashboardHome;
