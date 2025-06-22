@@ -16,9 +16,11 @@ class YourSecureView(APIView):
         return Response({"msg": "You are authenticated!"})
     
 class ProductViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
 class InventoryRecordViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = InventoryRecord.objects.all()
     serializer_class = InventoryRecordSerializer

@@ -60,7 +60,9 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS =[
+    "http://localhost:3000",
     "http://localhost:3001",
+    
 ]
 ROOT_URLCONF = 'fba_backend.urls'
 
@@ -87,8 +89,12 @@ WSGI_APPLICATION = 'fba_backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'fba_tool_db',
+        'USER': 'fba_user',
+        'PASSWORD': 'mike2456',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
